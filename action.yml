@@ -1,0 +1,9 @@
+---
+name: Molecule
+description: Run molecule test
+
+runs:
+  using: docker
+  image: 'docker://borisskert/molecule:latest'
+  args:
+    - test
