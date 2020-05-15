@@ -2,8 +2,14 @@
 name: Molecule
 description: Run molecule test
 
+inputs:
+  arguments:
+    description: The used molecule arguments.
+    required: false
+    default: test
+
 runs:
   using: docker
-  image: 'docker://borisskert/molecule:latest'
+  image: "docker://borisskert/molecule:0.0"
   args:
-    - test
+    - "${{ inputs.arguments }}"
