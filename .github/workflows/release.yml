@@ -1,10 +1,12 @@
 ---
-name: Run tests
+name: Release
 
 'on':
   push:
     tags:
       - v*
+    branches-ignore:
+      - '*'
 
 jobs:
   molecule_test:
@@ -15,7 +17,10 @@ jobs:
         with:
           path: "${{ github.repository }}"
 
+      - name: Set RELEASE_VERSION
+        run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#refs/*/}
+
       - name: run molecule
-        uses: borisskert/molecule-action@${GITHUB_REF#refs/tags/}
+        uses: borisskert/molecule-action@${{ env.RELEASE_VERSION }}
         with:
           arguments: --version
