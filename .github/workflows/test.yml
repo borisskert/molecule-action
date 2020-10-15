@@ -17,7 +17,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
         with:
-          path: "${{ github.repository }}"
+          path: ${{ github.repository }}
 
       - name: run molecule
         uses: borisskert/molecule-action@master
