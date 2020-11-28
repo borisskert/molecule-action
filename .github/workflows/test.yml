@@ -22,4 +22,4 @@ jobs:
       - name: run molecule
         uses: borisskert/molecule-action@master
         with:
-          arguments: --version
+          arguments: --version --no-debug
