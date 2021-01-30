@@ -10,6 +10,6 @@ inputs:
 
 runs:
   using: docker
-  image: "docker://borisskert/molecule:v21.01.20"
+  image: "docker://borisskert/molecule:v21.01.30"
   args:
     - "${{ inputs.arguments }}"
