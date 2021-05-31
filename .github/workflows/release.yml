@@ -56,8 +56,3 @@ jobs:
             borisskert/molecule:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-
-      - name: Test
-        uses: borisskert/molecule-action@master
-        with:
-          arguments: --version --no-debug
