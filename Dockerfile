@@ -4,15 +4,25 @@ ENV PIPX_HOME=/root/.local/pipx
 ENV PIPX_BIN_DIR=/root/.local/bin
 ENV PATH=/root/.local/bin:$PATH
 
-RUN apk add --no-cache \
-    bash \
-    python3 \
-    py3-pip \
-    py3-virtualenv \
-    pipx \
-    && pipx ensurepath
-
-RUN pipx install --include-deps ansible-core==2.18.0 \
+RUN apk add --no-cache --update --virtual \
+                .build-deps \
+                g++ \
+                make \
+                python3-dev \
+                libffi-dev \
+                openssl-dev \
+                rust \
+                cargo \
+                && \
+    apk add --no-cache \
+                bash \
+                git \
+                python3 \
+                py3-pip \
+                py3-virtualenv \
+                pipx \
+    && pipx ensurepath \
+    && pipx install --include-deps ansible-core==2.18.0 \
                                 ansible==10.6.0 \
                                 molecule==24.9.0 \
                                 ansible-lint==24.9.2 \
@@ -24,7 +34,20 @@ RUN pipx install --include-deps ansible-core==2.18.0 \
                                   molecule \
                                   ansible-lint \
                                   yamllint \
-                                  molecule-plugins
+                                  molecule-plugins \
+    && apk del .build-deps \
+                g++ \
+                make \
+                python3-dev \
+                libffi-dev \
+                openssl-dev \
+                rust \
+                cargo \
+                ;
+
+ENV DOCKER_WORKDIR=/github/workspace
+
+WORKDIR $DOCKER_WORKDIR
 
 COPY /docker/root /
 
