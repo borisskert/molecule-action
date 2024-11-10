@@ -1,46 +1,30 @@
-FROM alpine:3
+FROM alpine:3.20
 
-MAINTAINER borisskert <boris.skert@gmail.com>
+ENV PIPX_HOME=/root/.local/pipx
+ENV PIPX_BIN_DIR=/root/.local/bin
+ENV PATH=/root/.local/bin:$PATH
 
-ENV CRYPTOGRAPHY_DONT_BUILD_RUST 1
+RUN apk add --no-cache \
+    bash \
+    python3 \
+    py3-pip \
+    py3-virtualenv \
+    pipx \
+    && pipx ensurepath
 
-RUN apk add --no-cache --update \
-            --virtual \
-                .build-deps \
-                g++ \
-                make \
-                python3-dev \
-                libffi-dev \
-                openssl-dev \
-                && \
-    apk add --no-cache --update \
-                python3 \
-                py3-pip \
-                docker \
-                git \
-                bash \
-                && \
-    pip3 install --upgrade pip && \
-    pip3 install \
-                molecule==3.3.4 \
-                ansible \
-                ansible-core==2.11.1 \
-                ansible-lint==5.0.12 \
-                yamllint==1.26.1 \
-                docker \
-                molecule-docker \
-                && \
-    apk del .build-deps \
-                g++ \
-                make \
-                python3-dev \
-                libffi-dev \
-                openssl-dev \
-                ;
-
-ENV DOCKER_WORKDIR /github/workspace
-
-WORKDIR $DOCKER_WORKDIR
+RUN pipx install --include-deps ansible-core==2.18.0 \
+                                ansible==10.6.0 \
+                                molecule==24.9.0 \
+                                ansible-lint==24.9.2 \
+                                yamllint==1.35.1 \
+                                molecule-plugins==23.5.3 \
+    && pipx inject --include-deps molecule \
+                                  ansible-core \
+                                  ansible \
+                                  molecule \
+                                  ansible-lint \
+                                  yamllint \
+                                  molecule-plugins
 
 COPY /docker/root /
 
