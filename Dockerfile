@@ -1,45 +1,37 @@
-FROM alpine:3
+FROM alpine:3.20
 
-MAINTAINER borisskert <boris.skert@gmail.com>
+LABEL MAINTAINER="borisskert <boris.skert@gmail.com>"
 
-ENV CRYPTOGRAPHY_DONT_BUILD_RUST 1
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN apk add --no-cache --update \
-            --virtual \
-                .build-deps \
-                g++ \
-                make \
-                python3-dev \
-                libffi-dev \
-                openssl-dev \
-                && \
-    apk add --no-cache --update \
-                python3 \
-                py3-pip \
-                docker \
-                git \
-                bash \
-                && \
-    pip3 install --upgrade pip && \
-    pip3 install \
-                molecule==3.3.4 \
-                ansible \
-                ansible-core==2.11.1 \
-                ansible-lint==5.0.12 \
-                yamllint==1.26.1 \
-                docker \
-                molecule-docker \
-                && \
-    apk del .build-deps \
-                g++ \
-                make \
-                python3-dev \
-                libffi-dev \
-                openssl-dev \
-                ;
+    bash \
+    git \
+    docker \
+    python3 \
+    py3-pip \
+    py3-virtualenv \
+    build-base \
+    libffi-dev \
+    openssl-dev \
+    python3-dev \
+    cargo \
+    && python3 -m venv $VIRTUAL_ENV \
+    && pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir \
+        ansible-core==2.18.1 \
+        ansible==11.1.0 \
+        ansible-compat \
+        molecule==24.12.0 \
+        ansible-lint==24.10.0 \
+        yamllint==1.35.1 \
+        molecule-plugins==23.5.3 \
+        docker \
+    && apk del build-base libffi-dev openssl-dev python3-dev cargo
 
-ENV DOCKER_WORKDIR /github/workspace
-
+ENV DOCKER_WORKDIR=/github/workspace
+RUN mkdir -p $DOCKER_WORKDIR
 WORKDIR $DOCKER_WORKDIR
 
 COPY /docker/root /
