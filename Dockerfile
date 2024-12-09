@@ -1,52 +1,37 @@
 FROM alpine:3.20
 
-ENV PIPX_HOME=/root/.local/pipx
-ENV PIPX_BIN_DIR=/root/.local/bin
-ENV PATH=/root/.local/bin:$PATH
+MAINTAINER borisskert <boris.skert@gmail.com>
 
-RUN apk add --no-cache --update --virtual \
-                .build-deps \
-                g++ \
-                make \
-                python3-dev \
-                libffi-dev \
-                openssl-dev \
-                rust \
-                cargo \
-                && \
-    apk add --no-cache \
-                bash \
-                git \
-                python3 \
-                py3-pip \
-                py3-virtualenv \
-                pipx \
-    && pipx ensurepath \
-    && pipx install --include-deps ansible-core==2.18.0 \
-                                ansible==10.6.0 \
-                                molecule==24.9.0 \
-                                ansible-lint==24.9.2 \
-                                yamllint==1.35.1 \
-                                molecule-plugins==23.5.3 \
-    && pipx inject --include-deps molecule \
-                                  ansible-core \
-                                  ansible \
-                                  molecule \
-                                  ansible-lint \
-                                  yamllint \
-                                  molecule-plugins \
-    && apk del .build-deps \
-                g++ \
-                make \
-                python3-dev \
-                libffi-dev \
-                openssl-dev \
-                rust \
-                cargo \
-                ;
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+RUN apk add --no-cache --update \
+    bash \
+    git \
+    docker \
+    python3 \
+    py3-pip \
+    py3-virtualenv \
+    build-base \
+    libffi-dev \
+    openssl-dev \
+    python3-dev \
+    cargo \
+    && python3 -m venv $VIRTUAL_ENV \
+    && pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir \
+        ansible-core==2.18.1 \
+        ansible==11.1.0 \
+        ansible-compat \
+        molecule==24.12.0 \
+        ansible-lint==24.10.0 \
+        yamllint==1.35.1 \
+        molecule-plugins==23.5.3 \
+        docker \
+    && apk del build-base libffi-dev openssl-dev python3-dev cargo
 
 ENV DOCKER_WORKDIR=/github/workspace
-
+RUN mkdir -p $DOCKER_WORKDIR
 WORKDIR $DOCKER_WORKDIR
 
 COPY /docker/root /
