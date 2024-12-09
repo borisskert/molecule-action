@@ -1,6 +1,6 @@
 FROM alpine:3.20
 
-MAINTAINER borisskert <boris.skert@gmail.com>
+LABEL MAINTAINER="borisskert <boris.skert@gmail.com>"
 
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
